@@ -9,6 +9,9 @@ import { BrowserRouter , Routes, Route } from 'react-router-dom'
 import EnquiryForm from './Pages/EnquiryForm'
 import Footer from './Component/Footer'
 import Products from './Pages/Products'
+import Posts from './Pages/Posts'
+import SignUpPage from './Pages/SignUpPage'
+import Login from './Pages/Login'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -24,6 +27,9 @@ function App() {
           <Route path="/Products" element={<Products/>} />
           <Route path="/About" element={<About/>} />
           <Route path="/EnquiryForm" element={<EnquiryForm/>} />
+          <Route path="/Posts" element={<Posts/>} />
+          <Route path="/SignUpPage" element={<SignUpPage/>} />
+          <Route path="/Login" element={<Login/>} />
         </Routes>
         <Footer/>
       </BrowserRouter>

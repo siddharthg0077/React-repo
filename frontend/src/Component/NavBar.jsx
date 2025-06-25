@@ -22,7 +22,10 @@ const NavBar = () => {
         <a href="Home">Home</a>
         <a href="Products">Products</a>
         <a href="About">About Us</a>
+        <a href="Posts">Posts</a>
         <a href="EnquiryForm">Enquiry</a>
+        <a href="SignUpPage">SignUp</a>
+
 
 <div
   class="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-[#4070f4] shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300"
@@ -56,19 +59,25 @@ const NavBar = () => {
         </div>
 
         <button
+        
           class="cursor-pointer bg-gradient-to-b from-indigo-500 to-indigo-600 shadow-[0px_4px_32px_0_rgba(99,102,241,.70)] px-6 py-3 rounded-xl border-[1px] border-slate-500 text-white font-medium group"
+        // onClick={handleClick}
         >
           <div class="relative overflow-hidden">
             <p
               class="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]"
             >
+              <a href="Login" >
               Log In
-
+            </a>
             </p>
             <p
               class="absolute top-7 left-0 group-hover:top-0 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]"
             >
+              
+              <a href="Login" >
               Log In
+            </a>
             </p>
           </div>
         </button>
@@ -90,6 +99,9 @@ const NavBar = () => {
         <a href="About.jsx" className="block">About</a>
         <a href="#" className="block">Contact</a>
         <a href="EnquiryForm">Enquiry</a>
+        <a href="Posts">Posts</a>
+        <a href="SignUpPage">SignUp</a>
+
 
         <button className="cursor-pointer px-6 py-2 mt-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
           Login

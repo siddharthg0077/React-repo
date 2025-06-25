@@ -1,0 +1,1 @@
+mongodb+srv://admin:<db_password>@mernstack.14uho40.mongodb.net/?retryWrites=true&w=majority&appName=mernstack

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+
+import React, { use, useEffect, useState } from 'react';
 
 const EnquiryForm = () => {
+  const [enquiries, setEmquiries] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -8,17 +11,108 @@ const EnquiryForm = () => {
     message: '',
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (editingId)
+      try {
+        {
+          const res = await fetch(`http://localhost:8001/api/enquiries/${editingId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+
+          if (res.ok) {
+            alert('Enquiry updated successfully!');
+            setFormData({
+              name: '',
+              email: '',
+              subject: '',
+              message: '',
+            });
+            setEditingId(null);
+            fetchEnquiries();
+          } else {
+            alert('Failed to update enquiry. Please try again later.');
+          }
+        }
+      } catch (error) {
+        console.error('Error updating enquiry:', error);
+        alert('An error occurred. Please try again later.');
+      }
+
+    else {
+      // Submit new enquiry
+
+      try {
+        const res = await fetch('http://localhost:8001/api/enquiries', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (res.ok) {
+          alert('Enquiry submitted successfully!');
+          setFormData({
+            name: '',
+            email: '',
+            subject: '',
+            message: '',
+          });
+        } else {
+          alert('Failed to submit enquiry. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Error submitting enquiry:', error);
+        alert('An error occurred. Please try again later.');
+      }
+
+    }
+
+
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you for your enquiry! We will get back to you soon.');
+  const fetchEnquiries = async () => {
+    try {
+      const res = await fetch('http://localhost:8001/api/enquiries');
+      const data = await res.json();
+      setEmquiries(data);
+    } catch (error) {
+      console.error('Error fetching enquiries:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this enquiry?')) {
+      try {
+        const res = await fetch(`http://localhost:8001/api/enquiries/${id}`, {
+          method: 'DELETE',
+        });
+
+      } catch (error) {
+        console.error('Error deleting enquiry:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    }
+  };
+
+  const startEditing = (enquiry) => {
+    setEditingId(enquiry._id);
+    setForm({      name: enquiry.name,
+      email: enquiry.email,
+      subject: enquiry.subject,
+      message: enquiry.message,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth'} );
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
     setFormData({
       name: '',
       email: '',
@@ -27,14 +121,31 @@ const EnquiryForm = () => {
     });
   };
 
+  useEffect(() => {
+    fetchEnquiries();
+  }, []);
+
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex items-center justify-center p-6">
-      <div className="max-w-2xl w-full bg-white shadow-xl rounded-2xl p-8">
-        <h2 className="text-4xl font-bold text-blue-900 text-center mb-8">🎂 Enquiry Form 🎂</h2>
-        
+    <div className="w-full min-h-screen bg-gradient-to-br from-pink-100 via-yellow-100 to-pink-200 flex items-center justify-center p-6">
+      <div className="max-w-2xl w-full bg-white shadow-2xl rounded-3xl p-10 border-4 border-pink-200">
+        <h2 className="text-4xl font-extrabold text-pink-700 text-center mb-8">
+          ✨ Haven Cake Enquiry ✨
+        </h2>
+        <p className="text-center text-gray-600 mb-10 text-lg">
+          Have a sweet question or want to place a custom cake order? Let us know! 😊
+        </p>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="name">Name</label>
+            <label className="block mb-2 font-semibold text-pink-800" htmlFor="name">Name</label>
             <input
               type="text"
               id="name"
@@ -42,13 +153,13 @@ const EnquiryForm = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300"
               placeholder="Your full name"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="email">Email</label>
+            <label className="block mb-2 font-semibold text-pink-800" htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
@@ -56,13 +167,13 @@ const EnquiryForm = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="subject">Subject</label>
+            <label className="block mb-2 font-semibold text-pink-800" htmlFor="subject">Subject</label>
             <input
               type="text"
               id="subject"
@@ -70,13 +181,13 @@ const EnquiryForm = () => {
               value={formData.subject}
               onChange={handleChange}
               required
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enquiry subject"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300"
+              placeholder="What’s the occasion? (e.g., Birthday Cake)"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="message">Message</label>
+            <label className="block mb-2 font-semibold text-pink-800" htmlFor="message">Message</label>
             <textarea
               id="message"
               name="message"
@@ -84,51 +195,71 @@ const EnquiryForm = () => {
               onChange={handleChange}
               required
               rows="5"
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Write your message here..."
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300"
+              placeholder="Tell us more about your cake idea..."
             />
           </div>
-<div className="flex justify-center">
-  <button
-    className="relative inline-flex items-center justify-center px-8 py-2.5 overflow-hidden tracking-tighter text-white bg-gray-800 rounded-md group"
-  >
-    <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-orange-600 rounded-full group-hover:w-56 group-hover:h-56"></span>
-    <span className="absolute bottom-0 left-0 h-full -ml-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-auto h-full opacity-100 object-stretch"
-        viewBox="0 0 487 487"
-      >
-        <path
-          fillOpacity=".1"
-          fillRule="nonzero"
-          fill="#FFF"
-          d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
-        ></path>
-      </svg>
-    </span>
-    <span className="absolute top-0 right-0 w-12 h-full -mr-3">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="object-cover w-full h-full"
-        viewBox="0 0 487 487"
-      >
-        <path
-          fillOpacity=".1"
-          fillRule="nonzero"
-          fill="#FFF"
-          d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
-        ></path>
-      </svg>
-    </span>
-    <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-200"></span>
-    <span className="relative text-base font-semibold">Submit</span>
-  </button>
-</div>
 
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="relative inline-flex items-center justify-center px-10 py-3 overflow-hidden font-bold tracking-tight text-white bg-pink-600 rounded-lg shadow-lg group hover:bg-pink-700 transition duration-300"
+            >
+            {editingId ? 'Update Enquiry' : 'Send Enquiry'}
+              <span className="absolute inset-0 w-full h-full bg-pink-500 blur-sm opacity-70 group-hover:scale-125 transition-transform duration-300"></span>
+              <span className="relative">Send Enquiry</span>
+            </button>
 
+            {editingId && (
+              <button
+                type="button"
+                onClick={cancelEditing}
+                className="ml-4 px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
+
+        
       </div>
+      <div className="p-4">
+                <h2 className="text-2xl font-bold mb-4">Enquiry List</h2>
+                <table className="w-full border border-gray-300 text-sm">
+                    <thead>
+                        <tr className="bg-gray-100 text-left">
+                            <th className="p-2 border">Name</th>
+                            <th className="p-2 border">Email</th>
+                            <th className="p-2 border">Message</th>
+                            <th className="p-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {enquiries.map((enquiry) => (
+                            <tr key={enquiry._id}>
+                                <td className="p-2 border">{enquiry.name}</td>
+                                <td className="p-2 border">{enquiry.email}</td>
+                                <td className="p-2 border">{enquiry.message}</td>
+                                <td className="p-2 border">
+                                    <button
+                                        onClick={() => startEditing(enquiry)}
+                                        className="p-2 bg-green-400 text-white-600 hover:underline mr-2"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(enquiry._id)}
+                                        className="p-2 bg-red-400 text-white-600 hover:underline"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
     </div>
   );
 };
